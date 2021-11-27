@@ -77,7 +77,7 @@ if __name__ == "__main__":
                                    
         result = sorted(result, key=itemgetter(0), reverse=False)                  
         for i in range(len(result)):
-            f.write("%d.png  %d\n" % (result[i][0], result[i][1]))
+            f.write("%d.png %d\n" % (result[i][0], result[i][1]))
             f.flush()
         f.close()
     print("Test Finished")
