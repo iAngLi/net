@@ -24,7 +24,7 @@ args = parser.parse_args()
 # 超参数设置
 EPOCH = 135  # 遍历数据集次数   135
 pre_epoch = 76  # 定义已经遍历数据集的次数
-BATCH_SIZE = 128  # 批处理尺寸(batch_size)
+BATCH_SIZE = 32  # 批处理尺寸(batch_size)
 LR = 0.01  # 学习率
 
 # 准备数据集并预处理
@@ -42,15 +42,15 @@ transform_test = transforms.Compose([
 
 
 #testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=False, transform=transform_test)
-testset = MyDataset('./data/test', train = False);
-testloader = torch.utils.data.DataLoader(testset, batch_size=100, shuffle=False, num_workers=0)
+testset = MyDataset('./data/atest', train = False, transform = transform_test);
+testloader = torch.utils.data.DataLoader(testset, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
 # Cifar-10的标签
 classes = ('airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
 # 模型定义-ResNet
 net = ResNet18().to(device)
 net_path = os.path.join(args.outf, 'net_final.pth')
-net.load_state_dict(torch.load(net_path, map_location='cpu'))
+net.load_state_dict(torch.load(net_path))#, map_location='cpu'
 
 # 训练
 if __name__ == "__main__":
@@ -59,7 +59,8 @@ if __name__ == "__main__":
     best_acc = 85  # 2 初始化best test accuracy
     print("Start testing, Resnet-18!")  # 定义遍历数据集的次数
     result = []
-    with open("result.txt", "w") as f:
+    num =0;
+    with open("A.txt", "w") as f:
         # 全部训练完打印label
         print("Waiting Test!")
         with torch.no_grad():
@@ -74,7 +75,10 @@ if __name__ == "__main__":
                 for i in range(len(labels)):
                     b= labels[i].split('.')[0]#不带后缀的文件名
                     result.append((int(b),int(predicted[i].item())))
-                                   
+                    num = num +1;
+                    if((num % 100) == 0):
+                             print("%d \n" % (num))
+                    
         result = sorted(result, key=itemgetter(0), reverse=False)                  
         for i in range(len(result)):
             f.write("%d.png %d\n" % (result[i][0], result[i][1]))
